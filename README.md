@@ -54,6 +54,7 @@ This is a Spring Boot application that manages a clearing cost matrix per countr
 * RESTful Design
 * JUnit 5 — Modern Java testing framework
 * Docker — Containerization of the application for portable environments
+* JWT (Spring Security) — Stateless auth with role-based access and RSA token signing
 
 ---
 
@@ -63,6 +64,10 @@ You can find a ready-to-use Postman collection for testing the API under:
 
 [`postman/card-cost-api-collection.json`](postman/card-cost-api-collection.json)
 
+The collection includes:
+- A `Login` request to obtain the JWT token
+- A pre-configured Bearer Token variable (`{{jwt_token}}`) that is automatically applied to the protected endpoints
+- Examples for calling `/api/given-card-related-cost` and `/api/clearing-costs` with authentication
 ---
 
 ## Docker Deployment
@@ -91,12 +96,38 @@ You can test it using tools like Postman or curl and with the embedded unit/inte
 
 ---
 
-## Security Considerations
 
-- In production, the `/api/given-card-related-cost` endpoint should be protected with authentication (e.g., API Key or JWT)
-- Rate limiting should be applied to prevent abuse of the external Binlist API
-- Consider HTTPS termination via reverse proxy (e.g., NGINX or API Gateway)
-- CORS policies should be configured based on the consumer origin
+## Authentication Flow (JWT)
+
+All endpoints (except `/auth/login`) are protected and require a valid JWT token.
+
+### How to Authenticate:
+
+1. Send a POST request to the login endpoint:
+
+    ```
+    POST /auth/login
+    ```
+
+   #### Body (JSON):
+    ```json
+    {
+      "username": "admin1",
+      "password": "adminPass"
+    }
+    ```
+
+2. Copy the `token` from the response:
+    ```json
+    {
+      "token": "eyJhbGciOiJIUzI1NiJ9..."
+    }
+    ```
+
+3. Use the token as a Bearer token in the `Authorization` header for all subsequent requests:
+    ```
+    Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+    ```
 
 ---
 

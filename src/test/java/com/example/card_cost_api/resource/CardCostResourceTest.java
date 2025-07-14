@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -21,11 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,28 +40,51 @@ public class CardCostResourceTest {
     @MockBean
     private RestTemplate restTemplate;
 
+    private String getJwtToken() throws Exception {
+        String loginPayload = """
+            {
+                "username": "user1",
+                "password": "userPass1"
+            }
+        """;
+
+        MvcResult loginResult = mockMvc.perform(
+                post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginPayload)
+        ).andExpect(status().isOk()).andReturn();
+
+        Map<String, String> response = objectMapper.readValue(
+                loginResult.getResponse().getContentAsString(),
+                new TypeReference<>() {}
+        );
+
+        return response.get("token");
+    }
+
     @Test
     @Transactional
-    public void testGetCardRelatedCost() throws Exception{
+    public void testGetCardRelatedCost() throws Exception {
         String payload = """
             {"cardNumber":"45717360"}
-            """;
+        """;
 
         Map<String, Object> binlistResponse = Map.of(
                 "country", Map.of("alpha2", "DK")
         );
-
-        ResponseEntity<Map> mockResponse = new ResponseEntity<>(binlistResponse, HttpStatus.OK);
 
         when(restTemplate.exchange(
                 eq("https://lookup.binlist.net/45717360"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 eq(Map.class))
-        ).thenReturn(mockResponse);
+        ).thenReturn(new ResponseEntity<>(binlistResponse, HttpStatus.OK));
+
+        String token = getJwtToken();
 
         MvcResult mvcResult = mockMvc.perform(
                         post("/api/given-card-related-cost")
+                                .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(payload)
                 )
@@ -79,12 +100,12 @@ public class CardCostResourceTest {
 
     @Test
     public void testMissingCardNumber() throws Exception {
-        String payload = """
-            {}
-            """;
+        String payload = "{}";
+        String token = getJwtToken();
 
         MvcResult mvcResult = mockMvc.perform(
                         post("/api/given-card-related-cost")
+                                .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(payload)
                 )
@@ -101,7 +122,7 @@ public class CardCostResourceTest {
     public void testInvalidCardNumberFromBinlist() throws Exception {
         String payload = """
             {"cardNumber":"00000000"}
-            """;
+        """;
 
         when(restTemplate.exchange(
                 eq("https://lookup.binlist.net/00000000"),
@@ -110,8 +131,11 @@ public class CardCostResourceTest {
                 eq(Map.class))
         ).thenThrow(HttpClientErrorException.BadRequest.class);
 
+        String token = getJwtToken();
+
         MvcResult mvcResult = mockMvc.perform(
                         post("/api/given-card-related-cost")
+                                .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(payload)
                 )

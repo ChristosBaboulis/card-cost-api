@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,26 +34,51 @@ public class ClearingCostResourceTest {
     @Autowired
     private ClearingCostService clearingCostService;
 
+    private String getToken() throws Exception {
+        String loginRequest = """
+            {
+              "username": "admin1",
+              "password": "adminPass"
+            }
+            """;
+
+        MvcResult result = mockMvc.perform(
+                        post("/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(loginRequest))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String json = result.getResponse().getContentAsString();
+        Map<String, String> response = objectMapper.readValue(json, new TypeReference<>() {});
+        return response.get("token");
+    }
+
     @Test
     @Transactional
-    public void testGetAll() throws Exception{
-        MvcResult mvcResult = mockMvc.perform(get("/api/clearing-costs"))
+    public void testGetAll() throws Exception {
+        String token = getToken();
+
+        MvcResult mvcResult = mockMvc.perform(
+                        get("/api/clearing-costs")
+                                .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
-        List<ClearingCostRepresentation> reps = objectMapper.readValue(json,
-                new TypeReference<List<ClearingCostRepresentation>>() {
-                });
-
+        List<ClearingCostRepresentation> reps = objectMapper.readValue(json, new TypeReference<>() {});
         Assertions.assertFalse(reps.isEmpty());
         Assertions.assertEquals("US", reps.getFirst().countryCode);
     }
 
     @Test
     @Transactional
-    public void testGetById() throws Exception{
-        MvcResult mvcResult = mockMvc.perform(get("/api/clearing-costs/4002"))
+    public void testGetById() throws Exception {
+        String token = getToken();
+
+        MvcResult mvcResult = mockMvc.perform(
+                        get("/api/clearing-costs/4002")
+                                .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -64,7 +90,9 @@ public class ClearingCostResourceTest {
 
     @Test
     @Transactional
-    public void testCreate() throws Exception{
+    public void testCreate() throws Exception {
+        String token = getToken();
+
         ClearingCostRepresentation rep = new ClearingCostRepresentation();
         rep.countryCode = "AU";
         rep.cost = 12;
@@ -73,9 +101,9 @@ public class ClearingCostResourceTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         post("/api/clearing-costs")
+                                .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestBody)
-                )
+                                .content(requestBody))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -88,7 +116,9 @@ public class ClearingCostResourceTest {
 
     @Test
     @Transactional
-    public void testUpdate() throws Exception{
+    public void testUpdate() throws Exception {
+        String token = getToken();
+
         ClearingCostRepresentation rep = new ClearingCostRepresentation();
         rep.countryCode = "AU";
         rep.cost = 12;
@@ -97,9 +127,9 @@ public class ClearingCostResourceTest {
 
         MvcResult mvcResult = mockMvc.perform(
                         put("/api/clearing-costs/4002")
+                                .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestBody)
-                )
+                                .content(requestBody))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -112,12 +142,13 @@ public class ClearingCostResourceTest {
 
     @Test
     @Transactional
-    public void testDelete() throws Exception{
-        MvcResult mvcResult = mockMvc.perform(
+    public void testDelete() throws Exception {
+        String token = getToken();
+
+        mockMvc.perform(
                         delete("/api/clearing-costs/4002")
-                )
-                .andExpect(status().isNoContent())
-                .andReturn();
+                                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
 
         Assertions.assertEquals(6, clearingCostService.getAll().size());
     }
