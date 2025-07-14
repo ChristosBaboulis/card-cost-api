@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<!-- Project coordinates and packaging type for the card-cost-api -->
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Spring Boot parent POM: centralizes plugin and dependency versions for Spring-based projects -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.5</version>
+		<!-- relativePath left empty to force Maven to resolve from Maven Central -->
+		<relativePath/>
+	</parent>
+
+	<!-- Maven coordinates: unique identifiers for the current project -->
+	<groupId>com.example</groupId>
+	<artifactId>card_cost_api</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<!-- Human-readable name and optional description -->
+	<name>card_cost_api</name>
+	<description>CARD COST API</description>
+
+	<!-- Optional project homepage or documentation URL (can remain empty) -->
+	<url/>
+
+	<!-- === License metadata (MIT) for public distribution === -->
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://opensource.org/licenses/MIT</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<!-- === Developer information for project attribution === -->
+	<developers>
+		<developer>
+			<id>cbampoulis</id> <!-- κάποιο αναγνωριστικό (π.χ. GitHub username ή custom ID) -->
+			<name>Christos Bampoulis</name>
+			<email>chrisb260@gmail.com</email>
+		</developer>
+	</developers>
+
+	<!-- === Source Control Management (SCM) metadata === -->
+	<scm>
+		<url>https://github.com/ChristosBaboulis/card-cost-api</url>
+		<connection>scm:git:https://github.com/ChristosBaboulis/card-cost-api.git</connection>
+		<developerConnection>scm:git:git@github.com:ChristosBaboulis/card-cost-api.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<!-- === Centralized project properties: Java version, encoding, plugin defaults === -->
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+
+	<!-- === Dependencies === -->
+	<dependencies>
+		<!-- Spring Web: enables REST controllers, JSON handling, embedded Tomcat, and HTTP request/response support -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Spring Data JPA: integrates Hibernate and provides repository abstractions for relational databases -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Validation Starter: enables Bean Validation using Hibernate Validator and auto-configures support for @Valid, @Validated -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!-- Spring Boot DevTools: enables automatic restarts and development-time features like LiveReload and template reloading -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>			<!-- Only used at runtime, not needed for compilation -->
+			<optional>true</optional>		<!-- Not required for production or by other modules -->
+		</dependency>
+
+		<!-- H2 Database: in-memory SQL database for development and testing (requires corresponding JDBC driver) -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>		<!-- Only needed when the application runs, not during compilation -->
+		</dependency>
+
+		<!-- MapStruct: generates mappers for DTO - Entity conversion using annotations (no runtime overhead) -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>1.5.5.Final</version>
+		</dependency>
+
+		<!-- MapStruct Processor: required to generate mapping implementations during compilation -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>1.5.5.Final</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Spring Boot Test Starter: provides JUnit, Mockito, Spring Test utilities for unit and integration testing -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>		<!-- Only used during test phase -->
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Maven Compiler Plugin: compiles Java code and enables annotation processing for MapStruct -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>1.5.5.Final</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+
+			<!-- Spring Boot Maven Plugin: enables spring-boot:run and executable .jar packaging -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>
