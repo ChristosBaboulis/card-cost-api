@@ -3,10 +3,10 @@ package com.example.card_cost_api.domain;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "username", length = 50, nullable = false)
@@ -26,7 +26,7 @@ public class User {
         this.role = role;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

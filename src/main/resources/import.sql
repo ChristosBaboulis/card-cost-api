@@ -20,5 +20,5 @@ INSERT INTO Users (role, username, password) VALUES ( 'ADMIN', 'admin1', 'adminP
 -- ===========================
 -- INSERT NON-ADMIN Users
 -- ===========================
-INSERT INTO Users (role, username, password) VALUES ('USER', 'user1', 'userPass1');
-INSERT INTO Users (role, username, password) VALUES ('USER', 'user2', 'userPass2');
+INSERT INTO users (role, username, password) VALUES ('USER', 'user1', 'userPass1');
+INSERT INTO users (role, username, password) VALUES ('USER', 'user2', 'userPass2');

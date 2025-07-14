@@ -1,7 +1,7 @@
 package com.example.card_cost_api.auth;
 
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Sql("/import.sql")
 public class AuthServiceTest{
-    @Inject
+    @Autowired
     AuthService authService;
 
     @Test
     public void testValidCredentialsReturnsToken() {
-        Optional<String> token = authService.authenticate("csupport1", "securePass123");
+        Optional<String> token = authService.authenticate("user1", "userPass1");
 
         assertTrue(token.isPresent(), "Token should be present");
         assertFalse(token.get().isBlank(), "Token should not be blank");
@@ -25,7 +25,7 @@ public class AuthServiceTest{
 
     @Test
     public void testInvalidPasswordReturnsEmpty() {
-        Optional<String> token = authService.authenticate("csupport1", "wrongPassword");
+        Optional<String> token = authService.authenticate("user1", "wrongPassword");
 
         assertTrue(token.isEmpty(), "Should return empty when password is wrong");
     }
