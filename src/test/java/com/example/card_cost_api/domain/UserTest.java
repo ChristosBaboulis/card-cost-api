@@ -2,7 +2,9 @@ package com.example.card_cost_api.domain;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class UserTest {
     @Test
     public void testNoArgsConstructor() {

@@ -4,12 +4,14 @@ import com.example.card_cost_api.domain.User;
 import com.example.card_cost_api.persistence.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 public class UserServiceTest {
     private UserRepository userRepository;
     private UserService userService;
