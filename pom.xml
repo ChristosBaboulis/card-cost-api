@@ -38,7 +38,7 @@
 	<!-- === Developer information for project attribution === -->
 	<developers>
 		<developer>
-			<id>cbampoulis</id> <!-- κάποιο αναγνωριστικό (π.χ. GitHub username ή custom ID) -->
+			<id>cbampoulis</id>
 			<name>Christos Bampoulis</name>
 			<email>chrisb260@gmail.com</email>
 		</developer>
